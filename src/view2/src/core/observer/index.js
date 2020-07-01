@@ -1,5 +1,6 @@
-import { isObject, keys4Each, def } from '../utils';
+import { isObject, keys4Each, def, hasProto } from '../utils';
 import { __ob__ } from '../constants';
+import { arrayMethods, methodsToPatch } from './array';
 
 /*
   Define a reactive property on an Object.
@@ -38,6 +39,25 @@ const defineReactive = (obj, key, value = obj[key]) => {
 };
 
 /*
+  Augment a target Object or Array by intercepting
+  the prototype chain using __proto__
+
+  通过使用 __proto__ 劫持原型链，
+  以此来扩展目标对象或数组
+*/
+const protoAugment = (obj, proto) => Reflect.setPrototypeOf(obj, proto);
+
+/*
+  Augment a target Object or Array by defining
+  hidden properties.
+
+  通过定义隐式属性，
+  以此来扩展目标对象或数组
+*/
+const copyAugment = (obj, source, keys) =>
+  keys.forEach(key => def(obj, key, source[key]));
+
+/*
   Observer class that is attached to each observed
   object.
   Once attached, the observer converts the target
@@ -58,6 +78,16 @@ class Observer {
     */
     def(obj, __ob__, this);
 
+    if (Array.isArray(obj)) {
+      hasProto
+        ? protoAugment(obj, arrayMethods)
+        : copyAugment(obj, arrayMethods, methodsToPatch);
+
+      this.observeArray(obj);
+
+      return this;
+    }
+
     this.walk(obj);
   }
 
@@ -72,6 +102,15 @@ class Observer {
   */
   walk(obj) {
     keys4Each(obj, defineReactive);
+  }
+
+  /*
+    Observe a list of Array items.
+
+    观察数组元素。
+  */
+  observeArray(arr) {
+    arr.forEach(item => observe(item));
   }
 }
 

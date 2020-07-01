@@ -6,7 +6,8 @@ const vm = new View({
     cat: 'leo',
     girl: {
       name: 'daisy'
-    }
+    },
+    lib: [{ name: 'view' }]
   })
 });
 

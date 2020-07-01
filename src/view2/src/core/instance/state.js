@@ -1,8 +1,18 @@
-import { isFunction, isPlainObject } from '../utils';
+import { isFunction, isPlainObject, keys4Each } from '../utils';
 import { observe } from '../observer';
 import { _data } from '../constants';
 
 const getData = (data, vm) => data.call(vm);
+
+const proxy = (target, sourceKey, key) =>
+  Reflect.defineProperty(target, key, {
+    get() {
+      return this[sourceKey][key];
+    },
+    set(newValue) {
+      this[sourceKey][key] = newValue;
+    }
+  });
 
 const initData = vm => {
   let {
@@ -18,6 +28,8 @@ const initData = vm => {
     data() 函数配置项必须返回一个对象
   */
   !isPlainObject(data) && (data = {});
+
+  keys4Each(data, (_, key) => proxy(vm, _data, key));
 
   /*
     observe data
