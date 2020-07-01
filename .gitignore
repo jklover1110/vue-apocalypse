@@ -2,7 +2,7 @@
 node_modules
 /dist
 .eslintrc.js
-.prettier.js
+prettier.config.js
 
 # local env files
 .env.local
