@@ -1,10 +1,6 @@
 import { defaultTagRE, parseMustache, directive2Parser } from './parser';
 
 export default class Compiler {
-  static createInstance(vm) {
-    return new this(vm);
-  }
-
   constructor(vm) {
     this.vm = vm;
 
@@ -68,6 +64,6 @@ export default class Compiler {
   }
 }
 
-const createCompiler = options => Compiler.createInstance(options);
+const createCompiler = vm => new Compiler(vm);
 
 export { createCompiler };

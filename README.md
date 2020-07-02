@@ -6,17 +6,22 @@ Vue.js 源码学习记录仓库，源码部分实现，问题记录......
 
 ## I. 深入响应式原理
 
-### 1. initData()
+### 1. 实例初始化
 
-初始化数据
+- initState()
+  状态初始化
+  - initData()
+    数据初始化
 
-### 2. observe()
+### 2. 数据劫持
 
-观察数据
+- observe()
 
-- Observer 观察者类
+  - 忽略普通值
+  - 忽略已观察对象，防止重复代理
 
-  - 添加观察者标记
+- createObserver()
+  - 定义不可枚举属性，标记已观测对象
   - 对象劫持
   - 数组劫持
 
@@ -30,33 +35,70 @@ Vue.js 源码学习记录仓库，源码部分实现，问题记录......
 
 #### 数组变异方法劫持
 
-- observeArray()
-  遍历元素，代理嵌套对象
 - protoAugment() / copyAugment()
   原型链劫持，扩展数组方法
+- observeArray()
+  - 遍历当前元素，代理嵌套对象
+  - 遍历新增元素，代理嵌套对象
 
-### 3. proxy()
+### 3. 数据代理
 
-数据代理
+proxy()
 
 ## II. 模板编译
 
 > 官方大致实现流程： 解析标签和内容 => 生成 AST 语法树 => 生成代码 => 生成 render() 渲染函数
 
-### 1. createDocumentFragment()
+### 1. 编译模板
 
-创建文档片段，将元素附加到文档片段
+createCompiler()
 
-### 2. compiler()
+### 2. 生成文档片段
+
+node2Fragment()
+
+- createDocumentFragment() | new DocumentFragment()
+  创建文档片段
+- 将元素附加到文档片段
+
+#### 3. compiler()
 
 在于内存中进行模板编译
 
+- 编译元素节点
+- 编译文本节点
+
 #### 编译模板插值「Mustache 语法」
+
+parseMustache()
 
 #### 编译特殊 `attribute`「指令」
 
 - v-text
+  parseText()
+- v-model
+  parseModel()
 
-### 3. 将文档片段附加到 DOM 树
+### 4. 将文档片段附加到 DOM 树
 
 在 DOM 树中，文档片段被其所有的子元素所代替。
+
+## III. 创建渲染 watcher
+
+- createWatcher()
+  初始化渲染 watcher
+
+## IV. 合并生命周期
+
+## V. 依赖收集
+
+### 1. 在渲染时存储 watcher
+
+### 2. 对象的依赖收集
+
+- dep.depend()
+- childOb.dep.depend()
+
+### 3. 数组的依赖收集
+
+dependArray()

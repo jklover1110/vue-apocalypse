@@ -1,6 +1,21 @@
 import { isObject, keys4Each, def, hasProto } from '../utils';
 import { __ob__ } from '../constants';
 import { arrayMethods, methodsToPatch } from './array';
+import Dep, { createDep } from './dep';
+
+/*
+  Collect dependencies on array elements when the array is touched, since
+  we cannot intercept array element access like property getters.
+
+  由于我们效仿属性取值访问器拦截数组元素的方法，
+  当涉及到某个数组时，使用此方法进行数组元素的依赖收集。
+*/
+const dependArray = arr => {
+  arr.forEach(item => {
+    item && item[__ob__] && item[__ob__].dep.depend();
+    Array.isArray(item) && dependArray(item);
+  });
+};
 
 /*
   Define a reactive property on an Object.
@@ -8,18 +23,32 @@ import { arrayMethods, methodsToPatch } from './array';
   给对象定义一个响应式属性。
 */
 const defineReactive = (obj, key, value = obj[key]) => {
+  const dep = createDep();
+
   /*
     recursion to observe the value
     because the value may be a nested object
 
     递归代理嵌套对象
   */
-  observe(value);
+  let childOb = observe(value);
 
   Reflect.defineProperty(obj, key, {
     enumerable: !0,
     configurable: !0,
     get() {
+      const { target } = Dep;
+
+      if (target) {
+        dep.depend();
+
+        if (childOb) {
+          childOb.dep.depend();
+
+          Array.isArray(value) && dependArray(value);
+        }
+      }
+
       return value;
     },
     set(newValue) {
@@ -31,9 +60,11 @@ const defineReactive = (obj, key, value = obj[key]) => {
         recursion to observe the newValue
         because typeof newValue may be 'object'
 
-        递归代理新值
+        递归代理新值及其嵌套子对象
       */
-      observe(newValue);
+      childOb = observe(newValue);
+
+      dep.notify();
     }
   });
 };
@@ -71,6 +102,11 @@ const copyAugment = (obj, source, keys) =>
 */
 class Observer {
   constructor(obj) {
+    /*
+      对象或数组嵌套子对象依赖收集的 dep
+    */
+    this.dep = createDep();
+
     /*
       给目标对象定义一个 '__ob__' 属性，
       标记目标对象已被观察，
@@ -114,6 +150,8 @@ class Observer {
   }
 }
 
+const createObserver = obj => new Observer(obj);
+
 /*
   Attempt to create an observer instance for a value,
   returns the new observer if successfully observed,
@@ -129,7 +167,7 @@ function observe(value) {
   const ob =
     (Reflect.has(value, __ob__) && Reflect.get(value, __ob__)) || void 0;
 
-  return ob instanceof Observer ? ob : new Observer(value);
+  return ob instanceof Observer ? ob : createObserver(value);
 }
 
 export { Observer, observe };

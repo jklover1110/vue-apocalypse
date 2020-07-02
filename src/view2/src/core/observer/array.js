@@ -47,6 +47,13 @@ methodsToPatch.forEach(method => {
 
     inserted && ob.observeArray(inserted);
 
+    /*
+      notify change
+
+      通知改变
+    */
+    ob.dep.notify();
+
     return result;
   });
 });

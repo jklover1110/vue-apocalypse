@@ -9,9 +9,7 @@ const init = function(options) {
   Reflect.set(this, '$options', options);
   initState(this);
 
-  let {
-    $options: { el }
-  } = this;
+  let { el } = options;
 
   el = query(el);
 
