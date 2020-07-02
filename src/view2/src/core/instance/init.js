@@ -1,12 +1,25 @@
 import { initState } from './state';
 import { _init } from '../constants';
+import { isString } from '../utils';
+import { createCompiler } from '../../compiler';
 
-const initMixin = View => {
-  Reflect.set(View.prototype, _init, function(options) {
-    Reflect.set(this, '$options', options);
+const query = el => (isString(el) ? document.querySelector(el) : el);
 
-    initState(this);
-  });
+const init = function(options) {
+  Reflect.set(this, '$options', options);
+  initState(this);
+
+  let {
+    $options: { el }
+  } = this;
+
+  el = query(el);
+
+  el && Reflect.set(this, '$el', el) && createCompiler(this);
+
+  // el && this.$mount(el);
 };
+
+const initMixin = View => Reflect.set(View.prototype, _init, init);
 
 export { initMixin };

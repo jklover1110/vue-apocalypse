@@ -8,6 +8,12 @@
     <title><%= htmlWebpackPlugin.options.title %></title>
   </head>
   <body>
-    <div id="app"></div>
+    <div id="app">
+      <main">
+        <h1>{{cat}}</h1>
+        <h1>{{girl.name}} has {{cat}}</h1>
+        <h1 v-text="girl.name">v-text</h1>
+      </main>
+    </div>
   </body>
 </html>

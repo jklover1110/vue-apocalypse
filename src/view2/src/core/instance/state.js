@@ -2,10 +2,16 @@ import { isFunction, isPlainObject, keys4Each } from '../utils';
 import { observe } from '../observer';
 import { _data } from '../constants';
 
+const sharedPropertyDefinition = {
+  enumerable: true,
+  configurable: true
+};
+
 const getData = (data, vm) => data.call(vm);
 
 const proxy = (target, sourceKey, key) =>
   Reflect.defineProperty(target, key, {
+    ...sharedPropertyDefinition,
     get() {
       return this[sourceKey][key];
     },
