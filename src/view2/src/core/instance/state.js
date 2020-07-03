@@ -1,5 +1,6 @@
-import { isFunction, isPlainObject, keys4Each } from '../utils';
+import { isFunction, isPlainObject, keys4Each, isString } from '../utils';
 import { observe } from '../observer';
+import { createWatcher as watcherFactory } from '../observer/watcher';
 import { _data } from '../constants';
 
 const sharedPropertyDefinition = {
@@ -45,12 +46,57 @@ const initData = vm => {
   observe(data);
 };
 
-const initState = vm => {
-  const {
-    $options: { data }
-  } = vm;
+const createWatcher = (vm, expOrFn, handler, options) => {
+  if (isPlainObject(handler)) {
+    options = handler;
+    handler = handler.handler;
+  }
 
-  data ? initData(vm) : Reflect.set(vm, _data, {}) && observe(vm[_data]);
+  if (isString(handler)) {
+    handler = vm[handler];
+  }
+
+  return vm.$watch(expOrFn, handler, options);
 };
 
-export { initState };
+const initWatch = (vm, watch) =>
+  keys4Each(watch, (watch, key) => {
+    const handler = watch[key];
+
+    if (Array.isArray(handler)) {
+      handler.forEach(callback => createWatcher(vm, key, callback));
+    } else {
+      createWatcher(vm, key, handler);
+    }
+  });
+
+const initState = vm => {
+  const { data, watch } = vm.$options;
+
+  data ? initData(vm) : Reflect.set(vm, _data, {}) && observe(vm[_data]);
+
+  watch && initWatch(vm, watch);
+};
+
+const stateMixin = View => {
+  const dataDef = {};
+
+  const get = function() {
+    return this._data;
+  };
+
+  Reflect.set(dataDef, 'get', get);
+  Reflect.defineProperty(View.prototype, '$data', dataDef);
+
+  const $watch = function(expOrFn, cb, options = {}) {
+    if (isPlainObject(cb)) {
+      createWatcher(this, expOrFn, cb, options);
+    } else {
+      watcherFactory(this, expOrFn, cb, options);
+    }
+  };
+
+  Reflect.set(View.prototype, '$watch', $watch);
+};
+
+export { initState, stateMixin };

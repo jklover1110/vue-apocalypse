@@ -8,7 +8,12 @@ const vm = new View({
       name: 'daisy'
     },
     lib: [{ name: 'view' }]
-  })
+  }),
+  watch: {
+    cat() {
+      console.log(this.cat);
+    }
+  }
 });
 
 Reflect.set(window, 'vm', vm);
