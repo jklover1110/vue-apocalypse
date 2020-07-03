@@ -13,39 +13,45 @@ Vue.js 源码学习记录仓库，源码部分实现，问题记录......
   状态初始化
 
   - initData()
-    数据初始化
+
+  数据初始化
 
 ### 2. 数据劫持
 
 - observe()
 
-  - 忽略普通值
-  - 忽略已观察对象，防止重复代理
+  忽略普通值
+  忽略已观察对象，防止重复代理
 
 - createObserver()
-  - 定义不可枚举属性，标记已观察对象
-  - 对象劫持
-  - 数组劫持
+
+  定义不可枚举属性，标记已观察对象
+  对象劫持
+  数组劫持
 
 #### 对象属性劫持
 
 - defineReactive()
-  - 遍历属性，定义响应式
-  - 属性劫持，代理存取访问器
-  - 递归代理嵌套对象
-  - 递归代理新值
+
+  遍历属性，定义响应式
+  属性劫持，代理存取访问器
+  递归代理嵌套对象
+  递归代理新值
 
 #### 数组变异方法劫持
 
 - protoAugment() / copyAugment()
+
   原型链劫持，扩展数组方法
+
 - observeArray()
-  - 遍历当前元素，代理嵌套对象
-  - 遍历新增元素，代理嵌套对象
+
+  遍历当前元素，代理嵌套对象
+  遍历新增元素，代理嵌套对象
 
 ### 3. 数据代理
 
-proxy()
+- proxy()
 
 ## II. 模板编译
 
@@ -53,32 +59,37 @@ proxy()
 
 ### 1. 编译模板
 
-createCompiler()
+- createCompiler()
 
 ### 2. 生成文档片段
 
-node2Fragment()
+- node2Fragment()
 
-- createDocumentFragment() | new DocumentFragment()
-  创建文档片段
-- 将元素附加到文档片段
+  - createDocumentFragment() | new DocumentFragment()
+
+    创建文档片段
+
+  - 将元素附加到文档片段
 
 #### 3. compiler()
 
 在于内存中进行模板编译
 
-- 编译元素节点
-- 编译文本节点
+编译元素节点
+编译文本节点
 
 #### 编译模板插值「Mustache 语法」
 
-parseMustache()
+- parseMustache()
 
 #### 编译特殊 `attribute`「指令」
 
 - v-text
+
   parseText()
+
 - v-model
+
   parseModel()
 
 ### 4. 将文档片段附加到 DOM 树
@@ -88,6 +99,7 @@ parseMustache()
 ## III. 创建渲染 watcher
 
 - createWatcher()
+
   初始化渲染 watcher
 
 ## IV. 合并生命周期
@@ -110,19 +122,24 @@ dependArray()
 ### 1. 更新队列
 
 - resetSchedulerState()
+
   状态重置
 
 - flushSchedulerQueue()
+
   任务排序，清空队列
 
 - queueWatcher()
+
   watcher 去重，性能优化
   异步更新
 
 ### 2. 异步更新机制
 
 - flushCallbacks()
+
   清空回调
 
 - timerFunc()
+
   环境适配，优雅兼容
