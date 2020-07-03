@@ -21,7 +21,7 @@ Vue.js 源码学习记录仓库，源码部分实现，问题记录......
   - 忽略已观察对象，防止重复代理
 
 - createObserver()
-  - 定义不可枚举属性，标记已观测对象
+  - 定义不可枚举属性，标记已观察对象
   - 对象劫持
   - 数组劫持
 
@@ -102,3 +102,22 @@ parseMustache()
 ### 3. 数组的依赖收集
 
 dependArray()
+
+## VI. 异步更新队列
+
+### 1. 更新队列
+
+- resetSchedulerState()
+  状态重置
+- flushSchedulerQueue()
+  任务排序，清空队列
+- queueWatcher()
+  watcher 去重，性能优化
+  异步更新
+
+### 2. 异步更新机制
+
+- flushCallbacks()
+  清空回调
+- timerFunc()
+  环境适配，优雅兼容

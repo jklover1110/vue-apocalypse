@@ -4,7 +4,7 @@ import { __ob__ } from '../constants';
 const arrayProto = Array.prototype;
 const arrayMethods = Object.create(arrayProto);
 
-const methodsToPatch = [
+const methods2Patch = [
   'push',
   'pop',
   'shift',
@@ -19,7 +19,7 @@ const methodsToPatch = [
 
   劫持变异方法和触发事件
 */
-methodsToPatch.forEach(method => {
+methods2Patch.forEach(method => {
   /*
     cache original method
 
@@ -32,18 +32,18 @@ methodsToPatch.forEach(method => {
     const { [__ob__]: ob } = this;
     let inserted = void 0;
 
-    const handler = () => {
+    const collectNewItems = () => {
       inserted = args;
     };
 
-    const method2Handler = new Map()
-      .set('push', handler)
-      .set('unshift', handler)
+    const method2Collector = new Map()
+      .set('push', collectNewItems)
+      .set('unshift', collectNewItems)
       .set('splice', () => {
-        [, , ...inserted] = args;
+        inserted = args.slice(2);
       });
 
-    method2Handler.has(method) && method2Handler.get(method)();
+    method2Collector.has(method) && method2Collector.get(method)();
 
     inserted && ob.observeArray(inserted);
 
@@ -58,4 +58,4 @@ methodsToPatch.forEach(method => {
   });
 });
 
-export { arrayMethods, methodsToPatch };
+export { arrayMethods, methods2Patch };

@@ -1,6 +1,6 @@
 import { isObject, keys4Each, def, hasProto } from '../utils';
 import { __ob__ } from '../constants';
-import { arrayMethods, methodsToPatch } from './array';
+import { arrayMethods, methods2Patch } from './array';
 import Dep, { createDep } from './dep';
 
 /*
@@ -95,9 +95,9 @@ const copyAugment = (obj, source, keys) =>
   object's property keys into getter/setters that
   collect dependencies and dispatch updates.
 
-  附加到每个被观察对象的观察者类。
+  附加到每个被观察对象的 Observer 类。
   附加之后，
-  观察者会将目标对象所有的属性键转化为 getter/setters（取值函数/存值函数），
+  observer 会将目标对象所有的属性键转化为 getter/setters（取值函数/存值函数），
   以此实现依赖收集和调度更新。
 */
 class Observer {
@@ -117,14 +117,12 @@ class Observer {
     if (Array.isArray(obj)) {
       hasProto
         ? protoAugment(obj, arrayMethods)
-        : copyAugment(obj, arrayMethods, methodsToPatch);
+        : copyAugment(obj, arrayMethods, methods2Patch);
 
       this.observeArray(obj);
-
-      return this;
+    } else {
+      this.walk(obj);
     }
-
-    this.walk(obj);
   }
 
   /*
@@ -157,9 +155,9 @@ const createObserver = obj => new Observer(obj);
   returns the new observer if successfully observed,
   or the existing observer if the value already has one.
 
-  尝试根据值创建一个观察者实例，
-  若成功观察，则返回一个新观察者，
-  若该值已被附加了观察者，则返回该值所附加的观察者
+  尝试根据值创建一个 observer 实例，
+  若成功观察，则返回一个新 observer，
+  若该值已被附加了 observer，则返回该值所附加的 observer
 */
 function observe(value) {
   if (!isObject(value)) return;

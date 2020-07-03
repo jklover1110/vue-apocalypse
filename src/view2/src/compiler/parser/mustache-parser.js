@@ -12,7 +12,7 @@ const getContent = (text, vm) =>
 
 const parseMustache = (text, node, vm) => {
   const content = text.replace(defaultTagRE, (...args) => {
-    const [, exp] = args;
+    const exp = args[1];
 
     createWatcher(vm, exp, () => updateContent(node, getContent(text, vm)));
 

@@ -1,5 +1,6 @@
 import { isFunction, parsePath } from '../utils';
 import { pushTarget, popTarget } from './dep';
+import { queueWatcher } from './scheduler';
 
 let uid = 0;
 
@@ -31,7 +32,7 @@ export default class Watcher {
     /*
       parse expression for getter
 
-      解析表达式赋值给 getter
+      解析表达式作为 getter
     */
     this.getter = isFunction(expOrFn) ? expOrFn : parsePath(expOrFn);
 
@@ -77,7 +78,7 @@ export default class Watcher {
     当依赖改变是被调用。
   */
   update() {
-    this.run();
+    queueWatcher(this);
   }
 
   /*

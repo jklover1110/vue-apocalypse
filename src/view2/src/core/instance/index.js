@@ -1,5 +1,6 @@
 import { initMixin } from './init';
 import { _init } from '../constants';
+import { lifecycleMixin } from './lifecycle';
 
 export default class View {
   constructor(options) {
@@ -8,3 +9,4 @@ export default class View {
 }
 
 initMixin(View);
+lifecycleMixin(View);
