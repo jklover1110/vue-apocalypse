@@ -10,6 +10,7 @@ Vue.js 源码学习记录仓库，源码部分实现，问题记录......
 
 - initState()
   状态初始化
+
   - initData()
     数据初始化
 
@@ -109,8 +110,10 @@ dependArray()
 
 - resetSchedulerState()
   状态重置
+
 - flushSchedulerQueue()
   任务排序，清空队列
+
 - queueWatcher()
   watcher 去重，性能优化
   异步更新
@@ -119,5 +122,6 @@ dependArray()
 
 - flushCallbacks()
   清空回调
+
 - timerFunc()
   环境适配，优雅兼容
