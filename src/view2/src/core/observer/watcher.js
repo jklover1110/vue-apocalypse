@@ -17,15 +17,24 @@ export default class Watcher {
     this.vm = vm;
 
     if (options) {
-      const { user } = options;
+      const { user, lazy } = options;
 
       this.user = user;
+      this.lazy = lazy;
     } else {
-      this.user = !1;
+      this.user = this.lazy = !1;
     }
 
     this.cb = cb;
     this.id = uid++;
+
+    /*
+      for lazy watcher
+
+      供 lazy watcher 使用
+    */
+    this.dirty = this.lazy;
+
     this.deps = [];
     this.depIds = new Set();
 
@@ -78,7 +87,11 @@ export default class Watcher {
     当依赖改变是被调用。
   */
   update() {
-    queueWatcher(this);
+    if (this.lazy) {
+      this.dirty = !0;
+    } else {
+      queueWatcher(this);
+    }
   }
 
   /*
@@ -97,6 +110,27 @@ export default class Watcher {
 
       this.cb.call(this.vm, value, oldValue);
     }
+  }
+
+  /*
+    Evaluate the value of the watcher.
+    This only gets called for lazy watchers.
+
+    估算 watcher 的值。
+    该方法仅被 lazy watchers 调用。
+  */
+  evaluate() {
+    this.value = this.get();
+    this.dirty = !1;
+  }
+
+  /*
+    Depend on all deps collected by this watcher.
+
+    依赖此 watcher 收集的全部 dep。
+  */
+  depend() {
+    this.deps.forEach(dep => dep.depend());
   }
 }
 

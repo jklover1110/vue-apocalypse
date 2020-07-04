@@ -8,13 +8,53 @@ Vue.js 源码学习记录仓库，源码部分实现，问题记录......
 
 ### 1. 实例初始化
 
-- initState()
+- initMixin()
 
-  状态初始化
+  初始化实例
+
+  - initState()
+
+  初始化状态
 
   - initData()
 
-    数据初始化
+    初始化数据
+
+  - initComputed()
+
+    初始化计算属性
+
+    - 遍历 computed 选项
+
+    - defineComputed()
+
+      定义计算属性
+
+    - createComputedGetter()
+
+      创建计算属性 getter
+
+  - initWatch()
+
+    初始化 watch 选项
+
+    - 遍历 watch 选项
+
+    - createUserWatcher()
+
+      创建 user watcher
+
+- stateMixin()
+
+  状态混入
+
+  - Vue.prototype.\$data
+
+    定义原型数据成员 \$data
+
+  - Vue.prototype.\$watch
+
+    定义原型成员方法 \$watch()
 
 ### 2. 数据劫持
 
